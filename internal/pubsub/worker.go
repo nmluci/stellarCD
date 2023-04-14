@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/nmluci/go-backend/internal/commonkey"
-	"github.com/nmluci/go-backend/internal/indto"
-	"github.com/nmluci/go-backend/internal/service"
-	"github.com/nmluci/go-backend/internal/util/ctxutil"
+	"github.com/nmluci/stellarcd/internal/commonkey"
+	"github.com/nmluci/stellarcd/internal/indto"
+	"github.com/nmluci/stellarcd/internal/service"
+	"github.com/nmluci/stellarcd/internal/util/ctxutil"
 	"github.com/sirupsen/logrus"
 )
 

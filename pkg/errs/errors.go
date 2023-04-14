@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/nmluci/go-backend/pkg/constant"
-	"github.com/nmluci/go-backend/pkg/dto"
+	"github.com/nmluci/stellarcd/pkg/constant"
+	"github.com/nmluci/stellarcd/pkg/dto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

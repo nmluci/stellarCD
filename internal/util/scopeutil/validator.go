@@ -3,9 +3,9 @@ package scopeutil
 import (
 	"context"
 
-	"github.com/nmluci/go-backend/internal/commonkey"
-	"github.com/nmluci/go-backend/internal/indto"
-	"github.com/nmluci/go-backend/internal/util/ctxutil"
+	"github.com/nmluci/stellarcd/internal/commonkey"
+	"github.com/nmluci/stellarcd/internal/indto"
+	"github.com/nmluci/stellarcd/internal/util/ctxutil"
 )
 
 func ValidateScope(ctx context.Context, scope string) (ok bool) {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package fileop;
 
-option go_package = "github.com/nmluci/go-backend/pkg/rpc/fileop";
+option go_package = "github.com/nmluci/stellarcd/pkg/rpc/fileop";
 
 message File {
    int64 _id = 1;

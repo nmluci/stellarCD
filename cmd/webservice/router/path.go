@@ -1,6 +1,7 @@
 package router
 
 const (
-	basePath = "/v1"
-	PingPath = basePath + "/ping"
+	basePath      = "/v1"
+	PingPath      = basePath + "/ping"
+	ReflectorPath = basePath + "/reflector"
 )

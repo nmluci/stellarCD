@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/nmluci/go-backend/internal/util/echttputil"
-	"github.com/nmluci/go-backend/pkg/dto"
+	"github.com/nmluci/stellarcd/internal/util/echttputil"
+	"github.com/nmluci/stellarcd/pkg/dto"
 )
 
 type PingHandler func() (pingResponse dto.PublicPingResponse)

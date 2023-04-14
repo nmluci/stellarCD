@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nmluci/go-backend/cmd/webservice"
-	"github.com/nmluci/go-backend/internal/component"
-	"github.com/nmluci/go-backend/internal/config"
+	"github.com/nmluci/stellarcd/cmd/webservice"
+	"github.com/nmluci/stellarcd/internal/component"
+	"github.com/nmluci/stellarcd/internal/config"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/nmluci/go-backend/pkg/dto"
-	"github.com/nmluci/go-backend/pkg/errs"
+	"github.com/nmluci/stellarcd/pkg/dto"
+	"github.com/nmluci/stellarcd/pkg/errs"
 )
 
 func WriteSuccessResponse(ec echo.Context, data interface{}) error {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package hentai;
 
-option go_package = "github.com/nmluci/go-backend/pkg/rpc/hentai";
+option go_package = "github.com/nmluci/stellarcd/pkg/rpc/hentai";
 
 message Tag {
    int64 _id = 1;
