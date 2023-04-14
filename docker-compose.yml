@@ -7,3 +7,7 @@ services:
     ports:
       - "3980:7780"
       - "3981:7781"
+networks:
+  default:
+    name: stellar-net
+    external: true
