@@ -2,11 +2,13 @@ version: '3.5'
 services:
   backend:
     container_name: stellar-cd
-    image: nmluci/stellar-cd:0.0.1-alpha
+    image: nmluci/stellar-cd:0.0.1
     build: .
     ports:
       - "3980:7780"
       - "3981:7781"
+    volumes:
+      - /home/misaki/deployment/config:/data
 networks:
   default:
     name: stellar-net
