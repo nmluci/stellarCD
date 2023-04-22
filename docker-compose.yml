@@ -3,7 +3,11 @@ services:
   backend:
     container_name: stellar-cd
     image: nmluci/stellar-cd:0.0.1
-    build: .
+    build: 
+      context: .
+      args:
+        USERNAME_GITHUB: nmluci
+        TOKEN_GITHUB: 
     ports:
       - "3980:7780"
       - "3981:7781"
