@@ -47,7 +47,7 @@ func Init() {
 	}
 
 	deployPath := os.Getenv("DEPLOY_CONFIG_PATH")
-	if deployPath != "" {
+	if deployPath == "" {
 		log.Fatalf("%s deploy path should not be empty", logTagConfig)
 	}
 	conf.Environment = Environment(envString)
