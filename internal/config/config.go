@@ -64,8 +64,6 @@ func Init() {
 		}
 	}
 
-	ReloadDeploymentConfig()
-
 	config = &conf
 }
 

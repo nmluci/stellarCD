@@ -57,13 +57,14 @@ func Start(conf *config.Config, logger *logrus.Entry) {
 		Conf:    conf,
 	})
 
+	config.ReloadDeploymentConfig()
+
 	go worker.StartWorker()
 
 	watcher, err := component.InitFileWatcher(logger)
 	if err != nil {
 		logger.Fatalf("%s failed to init filewatcher, cause: %+v", logTagStartWebservice, err)
 	}
-
 	go component.WatchFilechange(logger, watcher)
 
 	logger.Infof("%s starting service, listening to: %s", logTagStartWebservice, conf.ServiceAddress)

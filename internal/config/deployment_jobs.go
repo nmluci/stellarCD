@@ -11,7 +11,8 @@ var deploymentJobs map[string]indto.DeploymentJobs
 func ReloadDeploymentConfig() {
 	temp := make(map[string]indto.DeploymentJobs)
 
-	_, err := toml.DecodeFile(config.DeployConfigPath, &temp)
+	conf := Get()
+	_, err := toml.DecodeFile(conf.DeployConfigPath, &temp)
 	if err != nil {
 		log.Errorf("%s", err)
 		return
