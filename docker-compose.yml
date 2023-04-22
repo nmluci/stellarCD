@@ -12,7 +12,9 @@ services:
       - "3980:7780"
       - "3981:7781"
     volumes:
-      - /home/misaki/deployment/config:/data
+      - /home/misaki/deployment/config:/config:ro
+      - /home/misaki/deployment/script:/script:ro
+      - /home/misaki/services:/services:ro
 networks:
   default:
     name: stellar-net

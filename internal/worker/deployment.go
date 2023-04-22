@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"fmt"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -106,6 +107,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmdPath, err := exec.LookPath(lookpath)
 		if err != nil {
 			dw.logger.Printf("%s lookpath err: %+v", tagLoggerDeploymentWorker, err)
+			dw.NotifyError(fmt.Sprintf("lookpath err: %+v", err), job.TaskID, job.Meta.ID)
 			continue
 		}
 
