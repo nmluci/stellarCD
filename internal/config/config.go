@@ -15,6 +15,8 @@ type Config struct {
 	RPCAddress     string          `json:"rpcAddress"`
 	TrustedService map[string]bool `json:"trustedService"`
 	Environment    Environment     `json:"environment"`
+
+	DeployConfigPath string
 }
 
 const logTagConfig = "[Init Config]"
@@ -44,7 +46,12 @@ func Init() {
 		log.Fatalf("%s environment must be either dev or prod, found: %s", logTagConfig, envString)
 	}
 
+	deployPath := os.Getenv("DEPLOY_CONFIG_PATH")
+	if deployPath != "" {
+		log.Fatalf("%s deploy path should not be empty", logTagConfig)
+	}
 	conf.Environment = Environment(envString)
+	conf.DeployConfigPath = deployPath
 
 	conf.TrustedService = map[string]bool{conf.ServiceID: true}
 	if trusted := os.Getenv("TRUSTED_SERVICES"); trusted == "" {
@@ -56,6 +63,8 @@ func Init() {
 			}
 		}
 	}
+
+	ReloadDeploymentConfig()
 
 	config = &conf
 }
