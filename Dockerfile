@@ -25,10 +25,7 @@ EXPOSE 7780
 EXPOSE 7781
 
 RUN apk update
-RUN apk add --no-cache tzdata
-RUN apk add --no-cache git
-RUN apk add --no-cache openssh
-RUN apk add --no-cache docker-cli
+RUN apk add --no-cache tzdata git openssh docker-cli docker-compose-cli
 
 ENV cp /usr/share/zoneinfo/Asia/Makassar /etc/localtime
 RUN echo "Asia/Makassar" > /etc/timezone
