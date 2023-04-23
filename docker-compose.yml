@@ -15,6 +15,7 @@ services:
       - /home/misaki/deployment/config:/config:ro
       - /home/misaki/deployment/script:/script:ro
       - /home/misaki/services:/services:ro
+      - /var/lib/docker:/var/lib/docker
 networks:
   default:
     name: stellar-net
