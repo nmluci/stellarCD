@@ -119,7 +119,6 @@ func (dw *deploymentWorker) Executor(id int) {
 		if err != nil {
 			dw.logger.Errorf("%s command err: %+v", tagLoggerDeploymentWorker, err)
 			dw.NotifyError(err.Error(), job.TaskID, job.Meta.ID)
-			continue
 		}
 
 		dw.logger.Infof("%s", msg)
