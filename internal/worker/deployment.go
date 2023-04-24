@@ -78,7 +78,6 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		}
 
 		if tag := re.FindString(payload[job.TriggerKey].(string)); tag == "" {
-			dw.NotifyError("failed to find tag", task.TaskID, task.Meta.ID)
 			return errs.ErrNotFound
 		} else {
 			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
@@ -116,7 +115,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmd := exec.Command(cmdPath)
 		cmd.Dir = job.Meta.WorkingDir
 		cmd.Args = []string{job.Meta.Command}
-		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%d", time.Now().UnixMilli()))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%s", time.Now().Format("2006-01-02 15:04:05")))
 
 		msg, err := cmd.CombinedOutput()
 		if err != nil {
