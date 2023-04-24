@@ -30,6 +30,11 @@ RUN apk add --no-cache tzdata git openssh docker-cli docker-cli-compose
 ENV cp /usr/share/zoneinfo/Asia/Makassar /etc/localtime
 RUN echo "Asia/Makassar" > /etc/timezone
 
+ARG USERNAME_GITHUB
+ARG TOKEN_GITHUB
+
+RUN git config --global url."https://${USERNAME_GITHUB}:${TOKEN_GITHUB}@github.com".insteadOf "https://github.com"
+
 COPY --from=build /app/conf /app/conf
 COPY --from=build /app/main /app/main
 
