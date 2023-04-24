@@ -2,10 +2,12 @@ package worker
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/nmluci/gostellar"
@@ -114,6 +116,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmd := exec.Command(cmdPath)
 		cmd.Dir = job.Meta.WorkingDir
 		cmd.Args = []string{job.Meta.Command}
+		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%d", time.Now().UnixMilli()))
 
 		msg, err := cmd.CombinedOutput()
 		if err != nil {
