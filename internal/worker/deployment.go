@@ -125,6 +125,7 @@ func (dw *deploymentWorker) Executor(id int) {
 
 		dw.NotifyInfo("deploy success", job.TaskID, job.Meta.ID, job.Tag)
 		dw.logger.Infof("%s deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
+		dw.logger.Infof("Deployment Logs: %s", msg)
 	}
 
 }
