@@ -79,7 +79,7 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 			dw.NotifyError("failed to find tag", task.TaskID, task.Meta.ID)
 			return errs.ErrNotFound
 		} else {
-			task.Tag = tag
+			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
 		}
 	}
 
@@ -124,7 +124,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		}
 
 		dw.NotifyInfo("deploy success", job.TaskID, job.Meta.ID, job.Tag)
-		dw.logger.Infof("[%s] deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
+		dw.logger.Infof("%s deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
 	}
 
 }
