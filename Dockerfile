@@ -30,6 +30,7 @@ RUN apk add --no-cache tzdata git openssh docker-cli docker-cli-compose
 ENV cp /usr/share/zoneinfo/Asia/Makassar /etc/localtime
 RUN echo "Asia/Makassar" > /etc/timezone
 
+RUN mkdir /root/.ssh/
 RUN ssh-keyscan github.com > /root/.ssh/known_hosts
 
 COPY --from=build /app/conf /app/conf
