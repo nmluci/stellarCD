@@ -14,7 +14,7 @@ services:
     volumes:
       - /home/misaki/deployment/config:/config:ro
       - /home/misaki/deployment/script:/script:ro
-      - /home/misaki/services:/services:ro
+      - /home/misaki/services:/services
       - /var/run/docker.sock:/var/run/docker.sock
 networks:
   default:
