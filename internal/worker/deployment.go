@@ -78,6 +78,7 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		}
 
 		if tag := re.FindString(payload[job.TriggerKey].(string)); tag == "" {
+			dw.NotifyError("failed to parse tag", task.TaskID, task.Meta.ID)
 			return errs.ErrNotFound
 		} else {
 			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
