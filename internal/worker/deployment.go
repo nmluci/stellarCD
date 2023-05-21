@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nmluci/gostellar"
+	"github.com/nmluci/gostellar/pkg/dto"
 	"github.com/nmluci/stellarcd/internal/indto"
 	"github.com/nmluci/stellarcd/pkg/errs"
 	"github.com/sirupsen/logrus"
@@ -24,7 +25,8 @@ type DeploymentJob struct {
 	TaskID string
 	Tag    string
 
-	Meta *indto.DeploymentJobs
+	Meta        *indto.DeploymentJobs
+	WebhookCred *dto.DiscordWebhoookCred
 }
 
 type DeploymentWorker interface {
@@ -67,13 +69,13 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		re, err := regexp.Compile(job.TriggerRegex)
 		if err != nil {
 			dw.logger.Errorf("%s failed to validate regex matching err: %+v", tagLoggerDeploymentWorker, err)
-			dw.NotifyError("failed to validate regex matching", task.TaskID, task.Meta.ID)
+			dw.NotifyError(nil, "failed to validate regex matching", task.TaskID, task.Meta.ID)
 			return errs.ErrBadRequest
 		}
 
 		_, ok := payload[job.TriggerKey].(string)
 		if !ok {
-			dw.NotifyError("failed to find trigger", task.TaskID, task.Meta.ID)
+			dw.NotifyError(nil, "failed to find trigger", task.TaskID, task.Meta.ID)
 			return errs.ErrNotFound
 		}
 
@@ -108,7 +110,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmdPath, err := exec.LookPath(lookpath)
 		if err != nil {
 			dw.logger.Printf("%s lookpath err: %+v", tagLoggerDeploymentWorker, err)
-			dw.NotifyError(fmt.Sprintf("lookpath err: %+v", err), job.TaskID, job.Meta.ID)
+			dw.NotifyError(job.WebhookCred, fmt.Sprintf("lookpath err: %+v", err), job.TaskID, job.Meta.ID)
 			continue
 		}
 
@@ -120,12 +122,12 @@ func (dw *deploymentWorker) Executor(id int) {
 		msg, err := cmd.CombinedOutput()
 		if err != nil {
 			dw.logger.Errorf("%s command err: %+v", tagLoggerDeploymentWorker, err)
-			dw.NotifyError(err.Error(), job.TaskID, job.Meta.ID)
+			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
 			dw.logger.Infof("Err: %s", msg)
 			continue
 		}
 
-		dw.NotifyInfo("deploy success", job.TaskID, job.Meta.ID, job.Tag)
+		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag)
 		dw.logger.Infof("%s deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
 	}
 

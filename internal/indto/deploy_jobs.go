@@ -9,4 +9,6 @@ type DeploymentJobs struct {
 	SignatureVal    string `toml:"signature_value"`
 	TriggerKey      string `toml:"trigger_key"`
 	TriggerRegex    string `toml:"trigger_regex"`
+	WebhookID       string `toml:"webhook_id"`
+	WebhookToken    string `toml:"webhook_token"`
 }

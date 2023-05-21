@@ -6,8 +6,8 @@ import (
 	"github.com/nmluci/gostellar/pkg/dto"
 )
 
-func (dw *deploymentWorker) NotifyError(msg string, reqID string, jobName string) {
-	err := dw.goStellar.Notification.Discord.Notify(&dto.DiscordWebhookMeta{
+func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string) {
+	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
 			dto.DiscordEmbeds{
@@ -33,15 +33,23 @@ func (dw *deploymentWorker) NotifyError(msg string, reqID string, jobName string
 				},
 			},
 		},
-	})
+	}
 
+	err := dw.goStellar.Notification.Discord.Notify(payload)
 	if err != nil {
 		dw.logger.Warnf("Notify err: %+v", err)
 	}
+
+	if cred != nil {
+		err := dw.goStellar.Notification.Discord.NotifyWithCred(cred, payload)
+		if err != nil {
+			dw.logger.Warnf("Notify err: %+v", err)
+		}
+	}
 }
 
-func (dw *deploymentWorker) NotifyInfo(msg string, reqID string, jobName string, versionTag string) {
-	err := dw.goStellar.Notification.Discord.Notify(&dto.DiscordWebhookMeta{
+func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string, versionTag string) {
+	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
 			dto.DiscordEmbeds{
@@ -71,9 +79,17 @@ func (dw *deploymentWorker) NotifyInfo(msg string, reqID string, jobName string,
 				},
 			},
 		},
-	})
+	}
 
+	err := dw.goStellar.Notification.Discord.Notify(payload)
 	if err != nil {
 		dw.logger.Warnf("Notify err: %+v", err)
+	}
+
+	if cred != nil {
+		err = dw.goStellar.Notification.Discord.NotifyWithCred(cred, payload)
+		if err != nil {
+			dw.logger.Warnf("Notify err: %+v", err)
+		}
 	}
 }
