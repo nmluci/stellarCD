@@ -65,17 +65,24 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		Meta:   job,
 	}
 
+	if job.WebhookID != "" && job.WebhookToken != "" {
+		task.WebhookCred = &dto.DiscordWebhoookCred{
+			WebhookID:    job.WebhookID,
+			WebhookToken: job.WebhookToken,
+		}
+	}
+
 	if job.TriggerRegex != "" {
 		re, err := regexp.Compile(job.TriggerRegex)
 		if err != nil {
 			dw.logger.Errorf("%s failed to validate regex matching err: %+v", tagLoggerDeploymentWorker, err)
-			dw.NotifyError(nil, "failed to validate regex matching", task.TaskID, task.Meta.ID)
+			dw.NotifyError(task.WebhookCred, "failed to validate regex matching", task.TaskID, task.Meta.ID)
 			return errs.ErrBadRequest
 		}
 
 		_, ok := payload[job.TriggerKey].(string)
 		if !ok {
-			dw.NotifyError(nil, "failed to find trigger", task.TaskID, task.Meta.ID)
+			dw.NotifyError(task.WebhookCred, "failed to find trigger", task.TaskID, task.Meta.ID)
 			return errs.ErrNotFound
 		}
 
