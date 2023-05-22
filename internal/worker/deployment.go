@@ -22,8 +22,9 @@ var (
 )
 
 type DeploymentJob struct {
-	TaskID string
-	Tag    string
+	TaskID    string
+	Tag       string
+	CommitMsg string
 
 	Meta        *indto.DeploymentJobs
 	WebhookCred *dto.DiscordWebhoookCred
@@ -91,6 +92,11 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		} else {
 			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
 		}
+
+		// TODO: Refactor nested attribute fetch
+		if msg, ok := payload["head_commit"].(map[string]string)["message"]; ok {
+			task.CommitMsg = msg
+		}
 	}
 
 	// TODO: Add SHA validation
@@ -134,7 +140,7 @@ func (dw *deploymentWorker) Executor(id int) {
 			continue
 		}
 
-		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag)
+		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag, job.CommitMsg)
 		dw.logger.Infof("%s deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
 	}
 

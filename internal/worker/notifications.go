@@ -48,7 +48,7 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg strin
 	}
 }
 
-func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string, versionTag string) {
+func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string, versionTag string, commitMsg string) {
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
@@ -75,6 +75,10 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string
 					dto.DiscordField{
 						Name:  "Version Tag",
 						Value: versionTag,
+					},
+					dto.DiscordField{
+						Name:  "Commit Message",
+						Value: commitMsg,
 					},
 				},
 			},
