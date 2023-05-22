@@ -76,10 +76,6 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string
 						Name:  "Version Tag",
 						Value: versionTag,
 					},
-					dto.DiscordField{
-						Name:  "Commit Message",
-						Value: commitMsg,
-					},
 				},
 			},
 		},
