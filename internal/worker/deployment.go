@@ -93,10 +93,10 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
 		}
 
-		// TODO: Refactor nested attribute fetch
-		if msg, ok := payload["head_commit"].(map[string]string)["message"]; ok {
-			task.CommitMsg = msg
-		}
+		// // TODO: Refactor nested attribute fetch
+		// if msg, ok := payload["head_commit"].(map[string]interface{})["message"]; ok {
+		// 	task.CommitMsg = msg
+		// }
 	}
 
 	// TODO: Add SHA validation
