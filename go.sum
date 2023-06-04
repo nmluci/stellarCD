@@ -44,6 +44,8 @@ github.com/nmluci/gostellar v1.4.0 h1:oWXF6tdeCeKg+TiEzjADz2OKHBzHJR9QQ0K2J04Ghl
 github.com/nmluci/gostellar v1.4.0/go.mod h1:P5O8cYAOnqC2JEANtizE2qxT56N2w4t6okBc/nqTNG8=
 github.com/nmluci/gostellar v1.5.0 h1:fPYLIbSe2EbJZm+vXjY7dF6BWix+zb2I3ywPHY59AVE=
 github.com/nmluci/gostellar v1.5.0/go.mod h1:8Ns99oafv+mpNJgBs1C6ddlSCilvVpW7l89I/MKwS3Y=
+github.com/nmluci/gostellar v1.5.1 h1:fQVMRFH8ideHZ91j6TNB+/ApaY1bNB/QaHQJt4g28jM=
+github.com/nmluci/gostellar v1.5.1/go.mod h1:8Ns99oafv+mpNJgBs1C6ddlSCilvVpW7l89I/MKwS3Y=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/gomega v1.18.1 h1:M1GfJqGRrBrrGGsbxzV5dqM2U2ApXefZCQpkukxYRLE=

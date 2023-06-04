@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/nmluci/stellarcd/internal/util/echttputil"
 	"github.com/nmluci/stellarcd/pkg/dto"
+	"github.com/rs/zerolog/log"
 )
 
 type DeploymentHandler func(context.Context, *dto.WebhoookRequest) error
@@ -18,6 +19,7 @@ func HandleDeployment(handler DeploymentHandler) echo.HandlerFunc {
 		}
 
 		if err := json.NewDecoder(c.Request().Body).Decode(&req.Webhook); err != nil {
+			log.Printf("%#+v", err)
 			return echttputil.WriteErrorResponse(c, err)
 		}
 

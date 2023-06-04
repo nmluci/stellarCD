@@ -53,7 +53,7 @@ type NewDeploymentWorkerParams struct {
 func NewDeploymentWorker(params *NewDeploymentWorkerParams) (dw DeploymentWorker) {
 	dw = &deploymentWorker{
 		wg:        &sync.WaitGroup{},
-		logger:    params.Logger.With().Str("service", "DeploymentWorker").Logger(),
+		logger:    params.Logger.With().Str("module", "DeploymentWorker").Logger(),
 		jobQueue:  make(chan DeploymentJob, 10),
 		goStellar: params.GoStellar,
 	}
@@ -123,7 +123,7 @@ func (dw *deploymentWorker) Executor(id int) {
 
 		cmdPath, err := exec.LookPath(lookpath)
 		if err != nil {
-			dw.logger.Printf("%s lookpath err: %+v", tagLoggerDeploymentWorker, err)
+			dw.logger.Error().Err(err).Send()
 			dw.NotifyError(job.WebhookCred, fmt.Sprintf("lookpath err: %+v", err), job.TaskID, job.Meta.ID)
 			continue
 		}

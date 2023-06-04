@@ -28,7 +28,7 @@ func Start(conf *config.Config, logger zerolog.Logger) {
 	ec.HidePort = true
 
 	gs := gostellar.NewGoStellar(gostellar.NewGoStellarParams{
-		Logger:      logger,
+		Logger:      &logger,
 		ServiceName: conf.ServiceID,
 	})
 
