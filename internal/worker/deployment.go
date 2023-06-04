@@ -147,6 +147,13 @@ func (dw *deploymentWorker) Executor(id int) {
 			}
 		}()
 
+		err = cmd.Start()
+		if err != nil {
+			dw.logger.Errorf("%s failed to start deployment err: %+v", tagLoggerDeploymentWorker, err)
+			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
+			continue
+		}
+
 		err = cmd.Wait()
 		if err != nil {
 			dw.logger.Errorf("%s command err: %+v", tagLoggerDeploymentWorker, err)
