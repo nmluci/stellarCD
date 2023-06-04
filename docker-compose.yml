@@ -2,7 +2,7 @@ version: '3.5'
 services:
   backend:
     container_name: stellar-cd
-    image: nmluci/stellar-cd:0.3.1
+    image: nmluci/stellar-cd:1.0.0
     build: 
       context: .
       args:

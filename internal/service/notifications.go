@@ -36,7 +36,7 @@ func (s *service) NotifyError(msg string, reqID string, jobName string) {
 	})
 
 	if err != nil {
-		s.logger.Warnf("Notify err: %+v", err)
+		s.logger.Warn().Err(err).Send()
 	}
 }
 
@@ -74,6 +74,6 @@ func (s *service) NotifyInfo(msg string, reqID string, jobName string, versionTa
 	})
 
 	if err != nil {
-		s.logger.Warnf("Notify err: %+v", err)
+		s.logger.Warn().Err(err).Send()
 	}
 }

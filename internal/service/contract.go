@@ -6,7 +6,7 @@ import (
 	"github.com/nmluci/gostellar"
 	"github.com/nmluci/stellarcd/internal/worker"
 	"github.com/nmluci/stellarcd/pkg/dto"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
 type Service interface {
@@ -18,7 +18,7 @@ type Service interface {
 }
 
 type service struct {
-	logger       *logrus.Entry
+	logger       zerolog.Logger
 	conf         *serviceConfig
 	stellarRPC   *gostellar.StellarRPC
 	goStellar    *gostellar.GoStellar
@@ -29,7 +29,7 @@ type serviceConfig struct {
 }
 
 type NewServiceParams struct {
-	Logger       *logrus.Entry
+	Logger       zerolog.Logger
 	StellarRPC   *gostellar.StellarRPC
 	GoStellar    *gostellar.GoStellar
 	DeployWorker worker.DeploymentWorker

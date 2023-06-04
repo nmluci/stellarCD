@@ -9,7 +9,7 @@ import (
 	"github.com/nmluci/stellarcd/internal/indto"
 	"github.com/nmluci/stellarcd/internal/service"
 	"github.com/nmluci/stellarcd/internal/util/ctxutil"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
 var (
@@ -17,13 +17,13 @@ var (
 )
 
 type FilePubSub struct {
-	logger  *logrus.Entry
+	logger  zerolog.Logger
 	redis   *redis.Client
 	service service.Service
 }
 
 type NewFilePubSubParams struct {
-	Logger  *logrus.Entry
+	Logger  zerolog.Logger
 	Redis   *redis.Client
 	Service service.Service
 }

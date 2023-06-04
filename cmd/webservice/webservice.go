@@ -8,12 +8,12 @@ import (
 	"github.com/nmluci/stellarcd/internal/config"
 	"github.com/nmluci/stellarcd/internal/service"
 	"github.com/nmluci/stellarcd/internal/worker"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
 const logTagStartWebservice = "[StartWebservice]"
 
-func Start(conf *config.Config, logger *logrus.Entry) {
+func Start(conf *config.Config, logger zerolog.Logger) {
 	// redis, err := component.InitRedis(&component.InitRedisParams{
 	// 	Conf:   &conf.RedisConfig,
 	// 	Logger: logger,
@@ -63,13 +63,13 @@ func Start(conf *config.Config, logger *logrus.Entry) {
 
 	watcher, err := component.InitFileWatcher(logger)
 	if err != nil {
-		logger.Fatalf("%s failed to init filewatcher, cause: %+v", logTagStartWebservice, err)
+		logger.Fatal().Err(err).Msg("failed to init filewatcher")
 	}
 	go component.WatchFilechange(logger, watcher)
 
-	logger.Infof("%s starting service, listening to: %s", logTagStartWebservice, conf.ServiceAddress)
+	logger.Info().Msgf("starting service, listening to: %s", conf.ServiceAddress)
 	if err := ec.Start(conf.ServiceAddress); err != nil {
-		logger.Errorf("%s starting service, cause: %+v", logTagStartWebservice, err)
+		logger.Error().Err(err).Msg("failed to start service")
 	}
 
 	watcher.Close()

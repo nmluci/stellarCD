@@ -15,7 +15,7 @@ import (
 	"github.com/nmluci/gostellar/pkg/dto"
 	"github.com/nmluci/stellarcd/internal/indto"
 	"github.com/nmluci/stellarcd/pkg/errs"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
 var (
@@ -40,20 +40,20 @@ type DeploymentWorker interface {
 
 type deploymentWorker struct {
 	wg        *sync.WaitGroup
-	logger    *logrus.Entry
+	logger    zerolog.Logger
 	goStellar *gostellar.GoStellar
 	jobQueue  chan DeploymentJob
 }
 
 type NewDeploymentWorkerParams struct {
-	Logger    *logrus.Entry
+	Logger    zerolog.Logger
 	GoStellar *gostellar.GoStellar
 }
 
 func NewDeploymentWorker(params *NewDeploymentWorkerParams) (dw DeploymentWorker) {
 	dw = &deploymentWorker{
 		wg:        &sync.WaitGroup{},
-		logger:    params.Logger,
+		logger:    params.Logger.With().Str("service", "DeploymentWorker").Logger(),
 		jobQueue:  make(chan DeploymentJob, 10),
 		goStellar: params.GoStellar,
 	}
@@ -77,7 +77,7 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 	if job.TriggerRegex != "" {
 		re, err := regexp.Compile(job.TriggerRegex)
 		if err != nil {
-			dw.logger.Errorf("%s failed to validate regex matching err: %+v", tagLoggerDeploymentWorker, err)
+			dw.logger.Error().Err(err).Msg("failed to validate regex matching")
 			dw.NotifyError(task.WebhookCred, "failed to validate regex matching", task.TaskID, task.Meta.ID)
 			return errs.ErrBadRequest
 		}
@@ -103,16 +103,16 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 	// TODO: Add SHA validation
 
 	dw.jobQueue <- task
-	dw.logger.Infof("%s succesfully insert new job", tagLoggerDeploymentWorker)
+	dw.logger.Info().Msg("succesfully insert new job")
 
 	return
 }
 
 func (dw *deploymentWorker) Executor(id int) {
-	dw.logger.Infof("%s initialized DeploymentWorker id: %d", tagLoggerDeploymentWorker, id)
+	dw.logger.Info().Int("id", id).Msg("initialized DeploymentWorker")
 
 	for job := range dw.jobQueue {
-		dw.logger.Infof("%s running job id: %s", tagLoggerDeploymentWorker, job.TaskID)
+		dw.logger.Info().Str("jobID", job.TaskID).Msg("running job")
 
 		var lookpath string
 		if filepath.IsAbs(job.Meta.Command) || job.Meta.WorkingDir != "" {
@@ -135,7 +135,7 @@ func (dw *deploymentWorker) Executor(id int) {
 
 		cmdOut, err := cmd.StdoutPipe()
 		if err != nil {
-			dw.logger.Warnf("%s stdout pipe err: %+v", tagLoggerDeploymentWorker, err)
+			dw.logger.Warn().Err(err).Msg("stdout pipe")
 			dw.NotifyError(job.WebhookCred, fmt.Sprintf("stdout pipe err: %+v", err), job.TaskID, job.Meta.ID)
 			continue
 		}
@@ -143,26 +143,26 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmdScanner := bufio.NewScanner(cmdOut)
 		go func() {
 			for cmdScanner.Scan() {
-				dw.logger.Infof("%s job=%s uuid=%s msg=%s", tagLoggerDeploymentWorker, job.Meta.ID, job.TaskID, cmdScanner.Text())
+				dw.logger.Info().Str("job", job.Meta.ID).Str("uuid", job.TaskID).Msg(cmdScanner.Text())
 			}
 		}()
 
 		err = cmd.Start()
 		if err != nil {
-			dw.logger.Errorf("%s failed to start deployment err: %+v", tagLoggerDeploymentWorker, err)
+			dw.logger.Error().Err(err).Msg("failed to start deployment")
 			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
 			continue
 		}
 
 		err = cmd.Wait()
 		if err != nil {
-			dw.logger.Errorf("%s command err: %+v", tagLoggerDeploymentWorker, err)
+			dw.logger.Error().Err(err).Send()
 			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
 			continue
 		}
 
 		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag, job.CommitMsg)
-		dw.logger.Infof("%s deploy success taskID: %s, jobID: %s, tag: %s", tagLoggerDeploymentWorker, job.TaskID, job.Meta.ID, job.Tag)
+		dw.logger.Info().Str("taskID", job.TaskID).Str("jobID", job.Meta.ID).Str("tag", job.Tag).Msg("deploy success")
 	}
 
 }
@@ -173,6 +173,6 @@ func (dw *deploymentWorker) StartWorker() {
 
 func (dw *deploymentWorker) StopWorker() {
 	dw.wg.Wait()
-	dw.logger.Errorf("%s gracefully shutting down worker", tagLoggerDeploymentWorker)
+	dw.logger.Warn().Msg("gracefully shutting down worker")
 	close(dw.jobQueue)
 }

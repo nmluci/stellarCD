@@ -5,11 +5,11 @@ import (
 	"github.com/nmluci/stellarcd/cmd/webservice/handler"
 	"github.com/nmluci/stellarcd/internal/config"
 	"github.com/nmluci/stellarcd/internal/service"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
 type InitRouterParams struct {
-	Logger  *logrus.Entry
+	Logger  zerolog.Logger
 	Service service.Service
 	Ec      *echo.Echo
 	Conf    *config.Config

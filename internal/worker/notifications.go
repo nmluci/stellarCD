@@ -37,13 +37,13 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg strin
 
 	err := dw.goStellar.Notification.Discord.Notify(payload)
 	if err != nil {
-		dw.logger.Warnf("Notify err: %+v", err)
+		dw.logger.Warn().Err(err).Send()
 	}
 
 	if cred != nil {
 		err := dw.goStellar.Notification.Discord.NotifyWithCred(cred, payload)
 		if err != nil {
-			dw.logger.Warnf("Notify err: %+v", err)
+			dw.logger.Warn().Err(err).Send()
 		}
 	}
 }
@@ -83,13 +83,13 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string
 
 	err := dw.goStellar.Notification.Discord.Notify(payload)
 	if err != nil {
-		dw.logger.Warnf("Notify err: %+v", err)
+		dw.logger.Warn().Err(err).Send()
 	}
 
 	if cred != nil {
 		err = dw.goStellar.Notification.Discord.NotifyWithCred(cred, payload)
 		if err != nil {
-			dw.logger.Warnf("Notify err: %+v", err)
+			dw.logger.Warn().Err(err).Send()
 		}
 	}
 }

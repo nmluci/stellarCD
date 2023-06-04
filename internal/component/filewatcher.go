@@ -5,13 +5,13 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/nmluci/stellarcd/internal/config"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
-func InitFileWatcher(logger *logrus.Entry) (w *fsnotify.Watcher, err error) {
+func InitFileWatcher(logger zerolog.Logger) (w *fsnotify.Watcher, err error) {
 	w, err = fsnotify.NewWatcher()
 	if err != nil {
-		logger.Infof("[WatchFileChange] failed to init fsnotify err: %+v", err)
+		logger.Warn().Err(err).Msg("failed to init fsnotify")
 		return
 	}
 
@@ -21,7 +21,7 @@ func InitFileWatcher(logger *logrus.Entry) (w *fsnotify.Watcher, err error) {
 	return
 }
 
-func WatchFilechange(logger *logrus.Entry, watcher *fsnotify.Watcher) {
+func WatchFilechange(logger zerolog.Logger, watcher *fsnotify.Watcher) {
 	for {
 		select {
 		case event, ok := <-watcher.Events:
@@ -30,11 +30,11 @@ func WatchFilechange(logger *logrus.Entry, watcher *fsnotify.Watcher) {
 			}
 
 			if event.Has(fsnotify.Write) {
-				logger.Infof("[WatchFileChange] reload config file")
+				logger.Info().Msg("reload config file")
 				config.ReloadDeploymentConfig()
 			}
 		case err := <-watcher.Errors:
-			logger.Infof("[WatchFileChange] watcher error: %+v", err)
+			logger.Warn().Err(err).Send()
 		}
 	}
 }

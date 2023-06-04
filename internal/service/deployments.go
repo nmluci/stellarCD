@@ -17,7 +17,7 @@ func (s *service) RunDeploymentJobs(ctx context.Context, payload *dto.WebhoookRe
 
 	jobs, ok := dConf[payload.JobID]
 	if !ok {
-		s.logger.Infof("%s no matching job found. (got: %s)", tagLoggerRunDeploymentJobs, payload.JobID)
+		s.logger.Info().Str("jobID", payload.JobID).Msg("no matching job found")
 		return errs.ErrNotFound
 	}
 	jobs.ID = payload.JobID
@@ -25,7 +25,7 @@ func (s *service) RunDeploymentJobs(ctx context.Context, payload *dto.WebhoookRe
 	go func() {
 		err = s.deployWorker.InsertJob(&jobs, payload.Webhook)
 		if err != nil {
-			s.logger.Errorf("%s err while inserting new job: %+v", tagLoggerRunDeploymentJobs, err)
+			s.logger.Error().Err(err).Msg("failed to inserting new job")
 			return
 		}
 	}()
