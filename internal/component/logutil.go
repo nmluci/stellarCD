@@ -6,16 +6,11 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-	"github.com/sirupsen/logrus"
 )
 
 type NewLoggerParams struct {
 	PrettyPrint bool
 	ServiceName string
-}
-
-type UTCFormatter struct {
-	logrus.Formatter
 }
 
 func CallerNameHook() zerolog.HookFunc {

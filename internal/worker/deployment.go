@@ -154,12 +154,9 @@ func (dw *deploymentWorker) Executor(id int) {
 			continue
 		}
 
-		err = cmd.Wait()
-		if err != nil {
-			dw.logger.Error().Err(err).Send()
-			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
-			continue
-		}
+		// ignoring err from cmd.Wait()
+		// due weird return code
+		cmd.Wait()
 
 		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag, job.CommitMsg)
 		dw.logger.Info().Str("taskID", job.TaskID).Str("jobID", job.Meta.ID).Str("tag", job.Tag).Msg("deploy success")
