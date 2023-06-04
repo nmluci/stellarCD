@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -132,11 +133,24 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmd.Args = []string{job.Meta.Command}
 		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%s", time.Now().Format("2006-01-02 15:04:05")))
 
-		msg, err := cmd.CombinedOutput()
+		cmdOut, err := cmd.StdoutPipe()
+		if err != nil {
+			dw.logger.Warnf("%s stdout pipe err: %+v", tagLoggerDeploymentWorker, err)
+			dw.NotifyError(job.WebhookCred, fmt.Sprintf("stdout pipe err: %+v", err), job.TaskID, job.Meta.ID)
+			continue
+		}
+
+		cmdScanner := bufio.NewScanner(cmdOut)
+		go func() {
+			for cmdScanner.Scan() {
+				dw.logger.Infof("%s job=%s uuid=%s msg=%s", tagLoggerDeploymentWorker, job.Meta.ID, job.TaskID, cmdScanner.Text())
+			}
+		}()
+
+		err = cmd.Wait()
 		if err != nil {
 			dw.logger.Errorf("%s command err: %+v", tagLoggerDeploymentWorker, err)
 			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
-			dw.logger.Infof("Err: %s", msg)
 			continue
 		}
 
