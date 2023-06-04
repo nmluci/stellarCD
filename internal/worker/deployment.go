@@ -131,7 +131,7 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmd := exec.Command(cmdPath)
 		cmd.Dir = job.Meta.WorkingDir
 		cmd.Args = []string{job.Meta.Command}
-		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%s", time.Now().Format("2006-01-02 15:04:05")))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%s", time.Now().Format("2006-01-02 15:04:05")), "BUILDKIT_PROGRESS=plain")
 
 		cmdOut, err := cmd.StdoutPipe()
 		if err != nil {
