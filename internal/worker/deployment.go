@@ -23,9 +23,12 @@ var (
 )
 
 type DeploymentJob struct {
-	TaskID    string
-	Tag       string
-	CommitMsg string
+	TaskID          string
+	Tag             string
+	CommitMessage   string
+	CommitURL       string
+	CommitTimestamp string
+	CommitAuthor    string
 
 	Meta        *indto.DeploymentJobs
 	WebhookCred *dto.DiscordWebhoookCred
@@ -78,13 +81,21 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 		re, err := regexp.Compile(job.TriggerRegex)
 		if err != nil {
 			dw.logger.Error().Err(err).Msg("failed to validate regex matching")
-			dw.NotifyError(task.WebhookCred, "failed to validate regex matching", task.TaskID, task.Meta.ID)
+			dw.NotifyError(task.WebhookCred, NotifyErrorParams{
+				Message: "failed to validate regex matching",
+				ReqID:   task.TaskID,
+				JobName: task.Meta.ID,
+			})
 			return errs.ErrBadRequest
 		}
 
 		_, ok := payload[job.TriggerKey].(string)
 		if !ok {
-			dw.NotifyError(task.WebhookCred, "failed to find trigger", task.TaskID, task.Meta.ID)
+			dw.NotifyError(task.WebhookCred, NotifyErrorParams{
+				Message: "failed to find trigger",
+				ReqID:   task.TaskID,
+				JobName: task.Meta.ID,
+			})
 			return errs.ErrNotFound
 		}
 
@@ -94,10 +105,13 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 			task.Tag = re.FindStringSubmatch(payload[job.TriggerKey].(string))[1]
 		}
 
-		// // TODO: Refactor nested attribute fetch
-		// if msg, ok := payload["head_commit"].(map[string]interface{})["message"]; ok {
-		// 	task.CommitMsg = msg
-		// }
+		if msg, ok := payload["head_commit"].(map[string]interface{}); ok {
+			task.CommitMessage = msg["message"].(string)
+			task.CommitURL = msg["url"].(string)
+			task.CommitTimestamp = msg["timestamp"].(string)
+			commitAuthor := msg["author"].(map[string]interface{})
+			task.CommitAuthor = fmt.Sprintf("%s <%s>", commitAuthor["username"].(string), commitAuthor["name"].(string))
+		}
 	}
 
 	// TODO: Add SHA validation
@@ -124,7 +138,11 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmdPath, err := exec.LookPath(lookpath)
 		if err != nil {
 			dw.logger.Error().Err(err).Send()
-			dw.NotifyError(job.WebhookCred, fmt.Sprintf("lookpath err: %+v", err), job.TaskID, job.Meta.ID)
+			dw.NotifyError(job.WebhookCred, NotifyErrorParams{
+				Message: fmt.Sprintf("lookpath err: %+v", err),
+				ReqID:   job.TaskID,
+				JobName: job.Meta.ID,
+			})
 			continue
 		}
 
@@ -136,7 +154,11 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmdOut, err := cmd.StdoutPipe()
 		if err != nil {
 			dw.logger.Warn().Err(err).Msg("stdout pipe")
-			dw.NotifyError(job.WebhookCred, fmt.Sprintf("stdout pipe err: %+v", err), job.TaskID, job.Meta.ID)
+			dw.NotifyError(job.WebhookCred, NotifyErrorParams{
+				Message: fmt.Sprintf("stdout pipe err: %+v", err),
+				ReqID:   job.TaskID,
+				JobName: job.Meta.ID,
+			})
 			continue
 		}
 
@@ -150,7 +172,11 @@ func (dw *deploymentWorker) Executor(id int) {
 		err = cmd.Start()
 		if err != nil {
 			dw.logger.Error().Err(err).Msg("failed to start deployment")
-			dw.NotifyError(job.WebhookCred, err.Error(), job.TaskID, job.Meta.ID)
+			dw.NotifyError(job.WebhookCred, NotifyErrorParams{
+				Message: err.Error(),
+				ReqID:   job.TaskID,
+				JobName: job.Meta.ID,
+			})
 			continue
 		}
 
@@ -158,7 +184,16 @@ func (dw *deploymentWorker) Executor(id int) {
 		// due weird return code
 		cmd.Wait()
 
-		dw.NotifyInfo(job.WebhookCred, "deploy success", job.TaskID, job.Meta.ID, job.Tag, job.CommitMsg)
+		dw.NotifyInfo(job.WebhookCred, NotifyInfoParams{
+			Message:         "deploy success",
+			ReqID:           job.TaskID,
+			JobName:         job.Meta.ID,
+			VersionTag:      job.Tag,
+			CommitMessage:   job.CommitMessage,
+			CommitURL:       job.CommitURL,
+			CommitTimestamp: job.CommitTimestamp,
+			CommitAuthor:    job.CommitAuthor,
+		})
 		dw.logger.Info().Str("taskID", job.TaskID).Str("jobID", job.Meta.ID).Str("tag", job.Tag).Msg("deploy success")
 	}
 

@@ -3,6 +3,7 @@ package config
 type Environment string
 
 const (
-	EnvironmentDev  = Environment("dev")
-	EnvironmentProd = Environment("prod")
+	EnvironmentLocal = Environment("local")
+	EnvironmentDev   = Environment("dev")
+	EnvironmentProd  = Environment("prod")
 )

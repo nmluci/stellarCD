@@ -6,13 +6,31 @@ import (
 	"github.com/nmluci/gostellar/pkg/dto"
 )
 
-func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string) {
+type NotifyErrorParams struct {
+	Message string
+	ReqID   string
+	JobName string
+}
+
+type NotifyInfoParams struct {
+	Message         string
+	ReqID           string
+	JobName         string
+	VersionTag      string
+	CommitMessage   string
+	CommitURL       string
+	CommitTimestamp string
+	CommitAuthor    string
+	// CommitComitter  string
+}
+
+func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params NotifyErrorParams) {
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
 			dto.DiscordEmbeds{
 				Title:       "Stellar CI/CD Error Report",
-				Description: msg,
+				Description: params.Message,
 				Color:       "13421823",
 				Timestamp:   time.Now().Format("2006-01-02 15:04:05"),
 				Footer: dto.DiscordFooter{
@@ -24,11 +42,11 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg strin
 				Fields: []dto.DiscordField{
 					dto.DiscordField{
 						Name:  "Request ID",
-						Value: reqID,
+						Value: params.ReqID,
 					},
 					dto.DiscordField{
 						Name:  "Job Name",
-						Value: jobName,
+						Value: params.JobName,
 					},
 				},
 			},
@@ -48,7 +66,7 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, msg strin
 	}
 }
 
-func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string, reqID string, jobName string, versionTag string, commitMsg string) {
+func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params NotifyInfoParams) {
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
@@ -66,17 +84,30 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, msg string
 				Fields: []dto.DiscordField{
 					dto.DiscordField{
 						Name:  "Request ID",
-						Value: reqID,
+						Value: params.ReqID,
 					},
 					dto.DiscordField{
 						Name:  "Job Name",
-						Value: jobName,
+						Value: params.JobName,
 					},
 					dto.DiscordField{
 						Name:  "Version Tag",
-						Value: versionTag,
+						Value: params.VersionTag,
+					},
+					dto.DiscordField{
+						Name:  "Commit Message",
+						Value: params.CommitMessage,
+					},
+					dto.DiscordField{
+						Name:  "Commit Author",
+						Value: params.CommitAuthor,
+					},
+					dto.DiscordField{
+						Name:  "Commit Timestamp",
+						Value: params.CommitTimestamp,
 					},
 				},
+				URL: params.CommitURL,
 			},
 		},
 	}

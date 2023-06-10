@@ -42,8 +42,8 @@ func Init() {
 	}
 
 	envString := os.Getenv("ENVIRONMENT")
-	if envString != "dev" && envString != "prod" {
-		log.Fatalf("%s environment must be either dev or prod, found: %s", logTagConfig, envString)
+	if envString != "dev" && envString != "prod" && envString != "local" {
+		log.Fatalf("%s environment must be either local, dev or prod, found: %s", logTagConfig, envString)
 	}
 
 	deployPath := os.Getenv("DEPLOY_CONFIG_PATH")
