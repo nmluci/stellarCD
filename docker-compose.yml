@@ -12,11 +12,11 @@ services:
       - "3980:7780"
       - "3981:7781"
     volumes:
-      - /home/misaki/deployment/config:/config:ro
-      - /home/misaki/deployment/script:/script:ro
-      - /home/misaki/services:/services
+      - ~/deployment/config:/config:ro
+      - ~/deployment/script:/script:ro
+      - ~/services:/services
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/misaki/.ssh/id_ed25519:/root/.ssh/id_ed25519
+      - ~/.ssh/id_ed25519:/root/.ssh/id_ed25519
 networks:
   default:
     name: stellar-net
