@@ -22,13 +22,14 @@ type NotifyInfoParams struct {
 	CommitTimestamp string
 	CommitAuthor    string
 	// CommitComitter  string
+	BuildTime string
 }
 
 func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params NotifyErrorParams) {
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
-			dto.DiscordEmbeds{
+			{
 				Title:       "Stellar CI/CD Error Report",
 				Description: params.Message,
 				Color:       "13421823",
@@ -40,11 +41,11 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params No
 					Name: "Stellar-CD by Natsumi-chan",
 				},
 				Fields: []dto.DiscordField{
-					dto.DiscordField{
+					{
 						Name:  "Request ID",
 						Value: params.ReqID,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Job Name",
 						Value: params.JobName,
 					},
@@ -70,7 +71,7 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
-			dto.DiscordEmbeds{
+			{
 				Title:       "Stellar CI/CD Info Report",
 				Description: "Deployment Success",
 				Color:       "13421823",
@@ -82,29 +83,33 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 					Name: "Stellar-CD by Natsumi-chan",
 				},
 				Fields: []dto.DiscordField{
-					dto.DiscordField{
+					{
 						Name:  "Request ID",
 						Value: params.ReqID,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Job Name",
 						Value: params.JobName,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Version Tag",
 						Value: params.VersionTag,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Commit Message",
 						Value: params.CommitMessage,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Commit Author",
 						Value: params.CommitAuthor,
 					},
-					dto.DiscordField{
+					{
 						Name:  "Commit Timestamp",
 						Value: params.CommitTimestamp,
+					},
+					{
+						Name:  "Build Time",
+						Value: "",
 					},
 				},
 				URL: params.CommitURL,

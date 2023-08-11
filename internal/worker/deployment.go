@@ -126,6 +126,7 @@ func (dw *deploymentWorker) Executor(id int) {
 	dw.logger.Info().Int("id", id).Msg("initialized DeploymentWorker")
 
 	for job := range dw.jobQueue {
+		timeStart := time.Now()
 		dw.logger.Info().Str("jobID", job.TaskID).Msg("running job")
 
 		var lookpath string
@@ -193,6 +194,7 @@ func (dw *deploymentWorker) Executor(id int) {
 			CommitURL:       job.CommitURL,
 			CommitTimestamp: job.CommitTimestamp,
 			CommitAuthor:    job.CommitAuthor,
+			BuildTime:       fmt.Sprintf("%.2f", time.Since(timeStart).Seconds()),
 		})
 		dw.logger.Info().Str("taskID", job.TaskID).Str("jobID", job.Meta.ID).Str("tag", job.Tag).Msg("deploy success")
 	}
