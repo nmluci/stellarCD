@@ -109,7 +109,7 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 					},
 					{
 						Name:  "Build Time",
-						Value: "",
+						Value: params.BuildTime,
 					},
 				},
 				URL: params.CommitURL,
