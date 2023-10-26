@@ -29,7 +29,7 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params No
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
-			{
+			dto.DiscordEmbeds{
 				Title:       "Stellar CI/CD Error Report",
 				Description: params.Message,
 				Color:       "13421823",
@@ -41,11 +41,11 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params No
 					Name: "Stellar-CD by Natsumi-chan",
 				},
 				Fields: []dto.DiscordField{
-					{
+					dto.DiscordField{
 						Name:  "Request ID",
 						Value: params.ReqID,
 					},
-					{
+					dto.DiscordField{
 						Name:  "Job Name",
 						Value: params.JobName,
 					},
@@ -68,10 +68,50 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params No
 }
 
 func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params NotifyInfoParams) {
+	fields := []dto.DiscordField{
+		dto.DiscordField{
+			Name:  "Request ID",
+			Value: params.ReqID,
+		},
+		dto.DiscordField{
+			Name:  "Job Name",
+			Value: params.JobName,
+		},
+		dto.DiscordField{
+			Name:  "Version Tag",
+			Value: params.VersionTag,
+		},
+		dto.DiscordField{
+			Name:  "Build Time",
+			Value: params.BuildTime,
+		},
+	}
+
+	if params.CommitMessage != "" {
+		fields = append(fields, dto.DiscordField{
+			Name:  "Commit Message",
+			Value: params.CommitMessage,
+		})
+	}
+
+	if params.CommitAuthor != "" {
+		fields = append(fields, dto.DiscordField{
+			Name:  "Commit Author",
+			Value: params.CommitAuthor,
+		})
+	}
+
+	if params.CommitTimestamp != "" {
+		fields = append(fields, dto.DiscordField{
+			Name:  "Commit Timestamp",
+			Value: params.CommitTimestamp,
+		})
+	}
+
 	payload := &dto.DiscordWebhookMeta{
 		Username: "Natsumi-chan",
 		Embeds: []dto.DiscordEmbeds{
-			{
+			dto.DiscordEmbeds{
 				Title:       "Stellar CI/CD Info Report",
 				Description: "Deployment Success",
 				Color:       "13421823",
@@ -82,37 +122,8 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 				Author: dto.DiscordAuther{
 					Name: "Stellar-CD by Natsumi-chan",
 				},
-				Fields: []dto.DiscordField{
-					{
-						Name:  "Request ID",
-						Value: params.ReqID,
-					},
-					{
-						Name:  "Job Name",
-						Value: params.JobName,
-					},
-					{
-						Name:  "Version Tag",
-						Value: params.VersionTag,
-					},
-					{
-						Name:  "Commit Message",
-						Value: params.CommitMessage,
-					},
-					{
-						Name:  "Commit Author",
-						Value: params.CommitAuthor,
-					},
-					{
-						Name:  "Commit Timestamp",
-						Value: params.CommitTimestamp,
-					},
-					{
-						Name:  "Build Time",
-						Value: params.BuildTime,
-					},
-				},
-				URL: params.CommitURL,
+				Fields: fields,
+				URL:    params.CommitURL,
 			},
 		},
 	}
