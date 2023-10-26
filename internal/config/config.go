@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -15,6 +16,8 @@ type Config struct {
 	RPCAddress     string          `json:"rpcAddress"`
 	TrustedService map[string]bool `json:"trustedService"`
 	Environment    Environment     `json:"environment"`
+	FilePath       string
+	RunSince       time.Time
 
 	DeployConfigPath string
 }
@@ -31,6 +34,7 @@ func Init() {
 		ServiceAddress: os.Getenv("SERVICE_ADDR"),
 		ServiceID:      os.Getenv("SERVICE_ID"),
 		RPCAddress:     os.Getenv("GPRC_ADDR"),
+		FilePath:       os.Getenv("FILE_PATH"),
 	}
 
 	if conf.ServiceName == "" {
@@ -52,6 +56,7 @@ func Init() {
 	}
 	conf.Environment = Environment(envString)
 	conf.DeployConfigPath = deployPath
+	conf.RunSince = time.Now()
 
 	conf.TrustedService = map[string]bool{conf.ServiceID: true}
 	if trusted := os.Getenv("TRUSTED_SERVICES"); trusted == "" {

@@ -1,6 +1,8 @@
 package timeutil
 
-import "time"
+import (
+	"time"
+)
 
 func ParseLocaltime(t string) (local time.Time) {
 	loc, _ := time.LoadLocation("Asia/Makassar")
@@ -11,4 +13,9 @@ func ParseLocaltime(t string) (local time.Time) {
 func ConvertLocalTime(t time.Time) (local time.Time) {
 	loc, _ := time.LoadLocation("Asia/Makassar")
 	return t.In(loc)
+}
+
+func FormatVerboseLogTime(t time.Time) (str string) {
+	loc, _ := time.LoadLocation("Asia/Makassar")
+	return t.In(loc).Format("2006-01-02T150405")
 }

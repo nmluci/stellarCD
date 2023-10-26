@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/docker/docker/client"
 	"github.com/google/uuid"
 	"github.com/nmluci/gostellar"
 	"github.com/nmluci/gostellar/pkg/dto"
@@ -42,23 +43,26 @@ type DeploymentWorker interface {
 }
 
 type deploymentWorker struct {
-	wg        *sync.WaitGroup
-	logger    zerolog.Logger
-	goStellar *gostellar.GoStellar
-	jobQueue  chan DeploymentJob
+	wg           *sync.WaitGroup
+	logger       zerolog.Logger
+	goStellar    *gostellar.GoStellar
+	dockerClient *client.Client
+	jobQueue     chan DeploymentJob
 }
 
 type NewDeploymentWorkerParams struct {
-	Logger    zerolog.Logger
-	GoStellar *gostellar.GoStellar
+	Logger       zerolog.Logger
+	GoStellar    *gostellar.GoStellar
+	DockerClient *client.Client
 }
 
 func NewDeploymentWorker(params *NewDeploymentWorkerParams) (dw DeploymentWorker) {
 	dw = &deploymentWorker{
-		wg:        &sync.WaitGroup{},
-		logger:    params.Logger.With().Str("module", "DeploymentWorker").Logger(),
-		jobQueue:  make(chan DeploymentJob, 10),
-		goStellar: params.GoStellar,
+		wg:           &sync.WaitGroup{},
+		logger:       params.Logger.With().Str("module", "DeploymentWorker").Logger(),
+		jobQueue:     make(chan DeploymentJob, 10),
+		goStellar:    params.GoStellar,
+		dockerClient: params.DockerClient,
 	}
 
 	return
@@ -112,9 +116,9 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 			commitAuthor := msg["author"].(map[string]interface{})
 			task.CommitAuthor = fmt.Sprintf("%s <%s>", commitAuthor["username"].(string), commitAuthor["name"].(string))
 		}
+	} else {
+		task.Tag = payload[job.TriggerKey].(string)
 	}
-
-	// TODO: Add SHA validation
 
 	dw.jobQueue <- task
 	dw.logger.Info().Msg("succesfully insert new job")

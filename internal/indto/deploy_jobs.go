@@ -6,6 +6,7 @@ type DeploymentJobs struct {
 	WorkingDir      string `toml:"cwd"`
 	Message         string `toml:"msg"`
 	SignatureHeader string `toml:"signature_header"`
+	SignatureSecret string `toml:"signature_secret"`
 	SignatureVal    string `toml:"signature_value"`
 	TriggerKey      string `toml:"trigger_key"`
 	TriggerRegex    string `toml:"trigger_regex"`

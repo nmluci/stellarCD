@@ -11,8 +11,6 @@ import (
 	"github.com/rs/zerolog"
 )
 
-const logTagStartWebservice = "[StartWebservice]"
-
 func Start(conf *config.Config, logger zerolog.Logger) {
 	// redis, err := component.InitRedis(&component.InitRedisParams{
 	// 	Conf:   &conf.RedisConfig,
