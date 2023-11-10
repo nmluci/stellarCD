@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nmluci/gostellar"
 	"github.com/nmluci/gostellar/pkg/dto"
+	"github.com/nmluci/stellarcd/internal/config"
 	"github.com/nmluci/stellarcd/internal/indto"
 	"github.com/nmluci/stellarcd/pkg/errs"
 	"github.com/rs/zerolog"
@@ -128,6 +129,7 @@ func (dw *deploymentWorker) InsertJob(job *indto.DeploymentJobs, payload map[str
 
 func (dw *deploymentWorker) Executor(id int) {
 	dw.logger.Info().Int("id", id).Msg("initialized DeploymentWorker")
+	conf := config.Get()
 
 	for job := range dw.jobQueue {
 		timeStart := time.Now()
@@ -155,6 +157,13 @@ func (dw *deploymentWorker) Executor(id int) {
 		cmd.Dir = job.Meta.WorkingDir
 		cmd.Args = []string{job.Meta.Command}
 		cmd.Env = append(os.Environ(), fmt.Sprintf("BUILD_TAG=%s", job.Tag), fmt.Sprintf("BUILD_TIMESTAMP=%s", time.Now().Format("2006-01-02 15:04:05")), "BUILDKIT_PROGRESS=plain")
+
+		if conf.MaxCore != "" {
+			cmd.Env = append(cmd.Env,
+				fmt.Sprintf("CARGO_BUILD_JOBS=%s", conf.MaxCore), // rust
+				fmt.Sprintf("GOMAXPROCS=%s", conf.MaxCore),       // go
+			)
+		}
 
 		cmdOut, err := cmd.StdoutPipe()
 		if err != nil {

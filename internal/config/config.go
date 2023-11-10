@@ -19,6 +19,8 @@ type Config struct {
 	FilePath       string
 	RunSince       time.Time
 
+	MaxCore string
+
 	DeployConfigPath string
 }
 
@@ -35,6 +37,7 @@ func Init() {
 		ServiceID:      os.Getenv("SERVICE_ID"),
 		RPCAddress:     os.Getenv("GPRC_ADDR"),
 		FilePath:       os.Getenv("FILE_PATH"),
+		MaxCore:        os.Getenv("MAX_CORE"),
 	}
 
 	if conf.ServiceName == "" {
