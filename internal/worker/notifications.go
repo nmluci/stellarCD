@@ -1,6 +1,8 @@
 package worker
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/nmluci/gostellar/pkg/dto"
@@ -64,6 +66,19 @@ func (dw *deploymentWorker) NotifyError(cred *dto.DiscordWebhoookCred, params No
 		if err != nil {
 			dw.logger.Warn().Err(err).Send()
 		}
+	}
+
+	msg := &dto.NtfyMessage{
+		Topic:    "maid",
+		Message:  fmt.Sprintf("Deployment failed for job: %s.\nReasons: %s\n\nRequestID: %s", params.JobName, params.Message, params.ReqID),
+		Title:    "Deployment Error",
+		Tags:     []string{"error"},
+		Priority: 5,
+	}
+
+	err = dw.goStellar.Notification.Ntfy.Notify(context.Background(), msg)
+	if err != nil {
+		dw.logger.Warn().Err(err).Send()
 	}
 }
 
@@ -138,5 +153,25 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 		if err != nil {
 			dw.logger.Warn().Err(err).Send()
 		}
+	}
+
+	msg := &dto.NtfyMessage{
+		Topic: "maid",
+		Message: fmt.Sprintf("Deployment success for job: %s.\nBuild Time: %s\nAuthor Name: %s\nCommit Message: %s\nVersion Tag: %s\n\nRequestID: %s",
+			params.JobName,
+			params.BuildTime,
+			params.CommitAuthor,
+			params.CommitMessage,
+			params.VersionTag,
+			params.ReqID,
+		),
+		Title:    "Deployment Success",
+		Tags:     []string{"success"},
+		Priority: 1,
+	}
+
+	err = dw.goStellar.Notification.Ntfy.Notify(context.Background(), msg)
+	if err != nil {
+		dw.logger.Warn().Err(err).Send()
 	}
 }
