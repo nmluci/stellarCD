@@ -167,7 +167,7 @@ func (dw *deploymentWorker) NotifyInfo(cred *dto.DiscordWebhoookCred, params Not
 		),
 		Title:    "Deployment Success",
 		Tags:     []string{"success"},
-		Priority: 1,
+		Priority: 3,
 	}
 
 	err = dw.goStellar.Notification.Ntfy.Notify(context.Background(), msg)
